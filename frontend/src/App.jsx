@@ -1,10 +1,15 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Homepage from "./components/Home";
+import Login from "./components/Home/Login";
+
 const App = () => {
   return (
-    <>
-      <h1 className="text-4xl text-rose-500 font-bold ">
-        Hello this is banking app
-      </h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        {/* <Route path="/login" element={<Login />} /> */}
+      </Routes>
+    </BrowserRouter>
   );
 };
 
