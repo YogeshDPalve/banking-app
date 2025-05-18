@@ -1,13 +1,15 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Homepage from "./components/Home";
-import Login from "./components/Home/Login";
+import Dashboard from "./components/Admin";
+import NewEmployee from "./components/Layouts/Adminlayout/NewEmployee";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Homepage />} />
-        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/admin" element={<Dashboard />} />
+        <Route path="/admin/new-employee" element={<NewEmployee />} />
       </Routes>
     </BrowserRouter>
   );
