@@ -13,7 +13,7 @@ export const findAllRecord = async (schema) => {
 
 export const createNewRecord = async (data, schema) => {
   const dbRes = await new schema(data).save();
-  return dbRes();
+  return dbRes;
 };
 
 export const updateRecord = async (id, data, schema) => {

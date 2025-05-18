@@ -1,23 +1,28 @@
 import createErrors from "http-errors";
 import express from "express";
-import path from "path";
+import colors from "colors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import usersRouter from "./routes/users.routes.js";
+import dotenv from "dotenv";
+dotenv.config();
+const PORT = process.env.PORT || 5000;
 
 const app = express();
-
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+
+// route level middleware
+app.use("/api/users", usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createErrors(404));
 });
 
-
+app.listen(PORT, () => {
+  console.log(`App listen on http://localhost:${PORT}`.bgCyan.white);
+});
