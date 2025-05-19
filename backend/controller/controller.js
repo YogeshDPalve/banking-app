@@ -14,7 +14,7 @@ export const createData = async (req, res, schema) => {
     if (error.code === 11000) {
       return res.status(422).send({
         success: false,
-        message: "Email already exist",
+        message: "Already exist",
         error,
       });
     } else {

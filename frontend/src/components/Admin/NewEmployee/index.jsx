@@ -1,19 +1,39 @@
 import { Button, Card, Form, Input, Table } from "antd";
-
+import swal from "sweetalert";
 import {
   DeleteOutlined,
   EditOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
+import axios from "axios";
 import Adminlayout from "../../Layouts/Adminlayout";
+import { trimData } from "../../../modules/modules";
+import { BASE_URL } from "../../../constants/constants";
 const { Item } = Form;
 
 const NewEmployee = () => {
   // state collection
   const [empForm] = Form.useForm();
   // create new employee
-  const onFinish = (values) => {
-    console.log(values);
+  const onFinish = async (values) => {
+    try {
+      let finalObj = trimData(values);
+      const { data } = await axios.post(`${BASE_URL}/users`, finalObj);
+      swal("Success", "Employee created successfully", "success");
+      empForm.resetFields();
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.error?.code === 11000) {
+        empForm.setFields([
+          {
+            name: "email",
+            errors: ["Email already exists !"],
+          },
+        ]);
+      } else {
+        swal("Warning", "Try again later", "warning");
+      }
+    }
   };
   const columns = [
     {
