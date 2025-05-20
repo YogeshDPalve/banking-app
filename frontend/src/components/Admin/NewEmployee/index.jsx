@@ -9,14 +9,16 @@ import axios from "axios";
 import Adminlayout from "../../Layouts/Adminlayout";
 import { trimData } from "../../../modules/modules";
 import { BASE_URL } from "../../../constants/constants";
-const { Item } = Form;
-
+import { useState } from "react";
+const { Item } = Form; 
 const NewEmployee = () => {
   // state collection
   const [empForm] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   // create new employee
   const onFinish = async (values) => {
     try {
+      setLoading(true);
       let finalObj = trimData(values);
       const { data } = await axios.post(`${BASE_URL}/users`, finalObj);
       swal("Success", "Employee created successfully", "success");
@@ -33,6 +35,8 @@ const NewEmployee = () => {
       } else {
         swal("Warning", "Try again later", "warning");
       }
+    } finally {
+      setLoading(false);
     }
   };
   const columns = [
@@ -120,6 +124,7 @@ const NewEmployee = () => {
             <Item>
               <Button
                 type="text"
+                loading={loading}
                 className="w-full !bg-blue-500 !text-bold !text-white"
                 htmlType="submit"
               >
