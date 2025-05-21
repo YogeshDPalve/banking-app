@@ -7,10 +7,9 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import Adminlayout from "../../Layouts/Adminlayout";
-import { trimData } from "../../../modules/modules";
-import { BASE_URL } from "../../../constants/constants";
-import { useState } from "react"; 
-const { Item } = Form; 
+import { trimData, http } from "../../../modules/modules";
+import { useState } from "react";
+const { Item } = Form;
 const NewEmployee = () => {
   // state collection
   const [empForm] = Form.useForm();
@@ -20,7 +19,8 @@ const NewEmployee = () => {
     try {
       setLoading(true);
       let finalObj = trimData(values);
-      const { data } = await axios.post(`${BASE_URL}/users`, finalObj);
+      const httpReq = http();
+      const { data } = await httpReq.post(`/users`, finalObj);
       swal("Success", "Employee created successfully", "success");
       empForm.resetFields();
     } catch (error) {
