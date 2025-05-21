@@ -9,7 +9,7 @@ import axios from "axios";
 import Adminlayout from "../../Layouts/Adminlayout";
 import { trimData } from "../../../modules/modules";
 import { BASE_URL } from "../../../constants/constants";
-import { useState } from "react";
+import { useState } from "react"; 
 const { Item } = Form; 
 const NewEmployee = () => {
   // state collection
