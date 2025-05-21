@@ -11,10 +11,18 @@ export const createData = async (req, res, schema) => {
     });
   } catch (error) {
     console.log("Error in create data controller : ", error);
-    return res.status(500).send({
-      success: false,
-      message: "Internal server error",
-      error,
-    });
+    if (error.code === 11000) {
+      return res.status(422).send({
+        success: false,
+        message: "Already exist",
+        error,
+      });
+    } else {
+      return res.status(500).send({
+        success: false,
+        message: "Internal server error",
+        error,
+      });
+    }
   }
 };

@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import usersRouter from "./routes/users.routes.js";
 import dotenv from "dotenv";
+import cors from "cors";
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 
@@ -14,6 +15,7 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors(["*"]));
 
 // route level middleware
 app.use("/api/users", usersRouter);

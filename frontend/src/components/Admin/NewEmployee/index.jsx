@@ -1,14 +1,44 @@
 import { Button, Card, Form, Input, Table } from "antd";
-
-import Adminlayout from "..";
+import swal from "sweetalert";
 import {
   DeleteOutlined,
   EditOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-const { Item } = Form;
-
+import axios from "axios";
+import Adminlayout from "../../Layouts/Adminlayout";
+import { trimData } from "../../../modules/modules";
+import { BASE_URL } from "../../../constants/constants";
+import { useState } from "react"; 
+const { Item } = Form; 
 const NewEmployee = () => {
+  // state collection
+  const [empForm] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  // create new employee
+  const onFinish = async (values) => {
+    try {
+      setLoading(true);
+      let finalObj = trimData(values);
+      const { data } = await axios.post(`${BASE_URL}/users`, finalObj);
+      swal("Success", "Employee created successfully", "success");
+      empForm.resetFields();
+    } catch (error) {
+      console.log(error);
+      if (error?.response?.data?.error?.code === 11000) {
+        empForm.setFields([
+          {
+            name: "email",
+            errors: ["Email already exists !"],
+          },
+        ]);
+      } else {
+        swal("Warning", "Try again later", "warning");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
   const columns = [
     {
       title: "Profile",
@@ -62,8 +92,8 @@ const NewEmployee = () => {
     <Adminlayout>
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add new employee">
-          <Form layout="vertical">
-            <Item name="John" label="Profile">
+          <Form form={empForm} onFinish={onFinish} layout="vertical">
+            <Item name="profile" label="Profile">
               <Input type="file" />
             </Item>
             <div className="grid md:grid-cols-2 gap-x-2">
@@ -94,6 +124,7 @@ const NewEmployee = () => {
             <Item>
               <Button
                 type="text"
+                loading={loading}
                 className="w-full !bg-blue-500 !text-bold !text-white"
                 htmlType="submit"
               >
@@ -102,7 +133,7 @@ const NewEmployee = () => {
             </Item>
           </Form>
         </Card>
-        <Card className="md:col-span-2" title="New employee list">
+        <Card className="md:col-span-2 overflow-auto" title="New employee list">
           <Table columns={columns} dataSource={[{}, {}]} />
         </Card>
       </div>
