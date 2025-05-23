@@ -39,6 +39,21 @@ const NewEmployee = () => {
       setLoading(false);
     }
   };
+
+  // handle upload
+
+  const handleUpload = async (e) => {
+    try {
+      let file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("Photo", file);
+      const httpReq = http();
+      const { data } = await httpReq.post("/upload/file", formData);
+      console.log(data);
+    } catch (error) {
+      swal("Failed", "unable to upload", "warning");
+    }
+  };
   const columns = [
     {
       title: "Profile",
@@ -93,8 +108,8 @@ const NewEmployee = () => {
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add new employee">
           <Form form={empForm} onFinish={onFinish} layout="vertical">
-            <Item name="profile" label="Profile">
-              <Input type="file" />
+            <Item name="xyz" label="Profile">
+              <Input type="file" onChange={handleUpload} />
             </Item>
             <div className="grid md:grid-cols-2 gap-x-2">
               <Item
