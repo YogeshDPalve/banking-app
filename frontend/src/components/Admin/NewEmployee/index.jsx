@@ -7,10 +7,9 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import Adminlayout from "../../Layouts/Adminlayout";
-import { trimData } from "../../../modules/modules";
-import { BASE_URL } from "../../../constants/constants";
-import { useState } from "react"; 
-const { Item } = Form; 
+import { trimData, http } from "../../../modules/modules";
+import { useState } from "react";
+const { Item } = Form;
 const NewEmployee = () => {
   // state collection
   const [empForm] = Form.useForm();
@@ -20,7 +19,8 @@ const NewEmployee = () => {
     try {
       setLoading(true);
       let finalObj = trimData(values);
-      const { data } = await axios.post(`${BASE_URL}/users`, finalObj);
+      const httpReq = http();
+      const { data } = await httpReq.post(`/users`, finalObj);
       swal("Success", "Employee created successfully", "success");
       empForm.resetFields();
     } catch (error) {
@@ -37,6 +37,21 @@ const NewEmployee = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // handle upload
+
+  const handleUpload = async (e) => {
+    try {
+      let file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("Photo", file);
+      const httpReq = http();
+      const { data } = await httpReq.post("/upload/file", formData);
+      console.log(data);
+    } catch (error) {
+      swal("Failed", "unable to upload", "warning");
     }
   };
   const columns = [
@@ -93,8 +108,8 @@ const NewEmployee = () => {
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add new employee">
           <Form form={empForm} onFinish={onFinish} layout="vertical">
-            <Item name="profile" label="Profile">
-              <Input type="file" />
+            <Item name="xyz" label="Profile">
+              <Input type="file" onChange={handleUpload} />
             </Item>
             <div className="grid md:grid-cols-2 gap-x-2">
               <Item
