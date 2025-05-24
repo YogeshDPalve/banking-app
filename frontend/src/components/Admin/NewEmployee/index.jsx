@@ -23,6 +23,14 @@ const NewEmployee = () => {
       finalObj.profile = photo ? photo : "bankImages/dummy.jpg";
       const httpReq = http();
       const { data } = await httpReq.post(`/users`, finalObj);
+
+      const obj = {
+        email: finalObj.email,
+        password: finalObj.password,
+      }; 
+
+      const res = await httpReq.post(`/send-email`, obj);
+      console.log(res);
       swal("Success", "Employee created successfully", "success");
       empForm.resetFields();
     } catch (error) {

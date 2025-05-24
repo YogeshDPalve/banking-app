@@ -22,4 +22,4 @@ public/bankImages/*
 *.njsproj
 *.sln
 *.sw?
-	
+.env
