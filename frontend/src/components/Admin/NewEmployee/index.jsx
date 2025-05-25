@@ -8,13 +8,27 @@ import {
 import axios from "axios";
 import Adminlayout from "../../Layouts/Adminlayout";
 import { trimData, http } from "../../../modules/modules";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const { Item } = Form;
 const NewEmployee = () => {
   // state collection
   const [empForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
+
+  // get all employee
+  useEffect(() => {
+    const fetcher = async () => {
+      try {
+        const httpReq = http();
+        const { data } = await httpReq.get("/users/");
+        console.log(data);
+      } catch (error) {
+        swal("Failed", "Unable to fetch data.", "warning");
+      }
+    };
+    fetcher();
+  }, []);
   // create new employee
   const onFinish = async (values) => {
     try {
@@ -27,7 +41,7 @@ const NewEmployee = () => {
       const obj = {
         email: finalObj.email,
         password: finalObj.password,
-      }; 
+      };
 
       const res = await httpReq.post(`/send-email`, obj);
       console.log(res);
@@ -51,7 +65,6 @@ const NewEmployee = () => {
   };
 
   // handle upload
-
   const handleUpload = async (e) => {
     try {
       let file = e.target.files[0];

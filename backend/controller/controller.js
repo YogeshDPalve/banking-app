@@ -1,4 +1,22 @@
-import { createNewRecord } from "../services/db.service.js";
+import { createNewRecord, findAllRecord } from "../services/db.service.js";
+
+export const getData = async (req, res, schema) => {
+  try {
+    const dbResponce = await findAllRecord(schema);
+    return res.status(200).send({
+      success: true,
+      message: "Employees data get successfully",
+      data: dbResponce,
+    });
+  } catch (error) {
+    console.log("Error to get employees : ", error.message);
+    return res.status(500).send({
+      success: false,
+      message: "Internal server error",
+      error,
+    });
+  }
+};
 
 export const createData = async (req, res, schema) => {
   try {
