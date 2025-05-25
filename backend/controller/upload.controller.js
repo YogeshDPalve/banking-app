@@ -6,17 +6,20 @@ const storage = multer.diskStorage({
     cb(null, "public/bankImages/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    const ext = path.extname(file.originalname);
+    const filename = Date.now() + ext;
+    cb(null, filename);
   },
 });
 
 const upload = multer({ storage }).single("photo");
+
 const uploadFile = (req, res) => {
   upload(req, res, (err) => {
     if (err) {
       console.log(err);
       return res.status(400).send({
-        error: err.message,
+        error: err,
       });
     }
     if (!req.file) {
@@ -26,7 +29,7 @@ const uploadFile = (req, res) => {
     }
     return res.status(200).send({
       message: "File uploaded successfully",
-      filePath: `bankImages/${req.file?.filename}`,
+      filePath: `bankImages/${req.file.filename}`,
     });
   });
 };

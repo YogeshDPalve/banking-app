@@ -14,13 +14,23 @@ const NewEmployee = () => {
   // state collection
   const [empForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [photo, setPhoto] = useState(null);
   // create new employee
   const onFinish = async (values) => {
     try {
       setLoading(true);
       let finalObj = trimData(values);
+      finalObj.profile = photo ? photo : "bankImages/dummy.jpg";
       const httpReq = http();
       const { data } = await httpReq.post(`/users`, finalObj);
+
+      const obj = {
+        email: finalObj.email,
+        password: finalObj.password,
+      }; 
+
+      const res = await httpReq.post(`/send-email`, obj);
+      console.log(res);
       swal("Success", "Employee created successfully", "success");
       empForm.resetFields();
     } catch (error) {
@@ -46,10 +56,10 @@ const NewEmployee = () => {
     try {
       let file = e.target.files[0];
       const formData = new FormData();
-      formData.append("Photo", file);
+      formData.append("photo", file);
       const httpReq = http();
       const { data } = await httpReq.post("/upload/file", formData);
-      console.log(data);
+      setPhoto(data.filePath);
     } catch (error) {
       swal("Failed", "unable to upload", "warning");
     }
@@ -108,7 +118,7 @@ const NewEmployee = () => {
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add new employee">
           <Form form={empForm} onFinish={onFinish} layout="vertical">
-            <Item name="xyz" label="Profile">
+            <Item name="photo" label="Profile">
               <Input type="file" onChange={handleUpload} />
             </Item>
             <div className="grid md:grid-cols-2 gap-x-2">
