@@ -1,9 +1,10 @@
-import { Button, Card, Form, Input, Table } from "antd";
+import { Button, Card, Form, Image, Input, Popconfirm, Table } from "antd";
 import swal from "sweetalert";
 import {
   DeleteOutlined,
   EditOutlined,
   EyeInvisibleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 import Adminlayout from "../../Layouts/Adminlayout";
@@ -15,14 +16,15 @@ const NewEmployee = () => {
   const [empForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
-
+  const [allEmployee, setAllEmployee] = useState([]);
   // get all employee
   useEffect(() => {
     const fetcher = async () => {
       try {
         const httpReq = http();
-        const { data } = await httpReq.get("/users/");
+        const { data } = await httpReq.get("/api/users/");
         console.log(data);
+        setAllEmployee(data?.data);
       } catch (error) {
         swal("Failed", "Unable to fetch data.", "warning");
       }
@@ -36,14 +38,14 @@ const NewEmployee = () => {
       let finalObj = trimData(values);
       finalObj.profile = photo ? photo : "bankImages/dummy.jpg";
       const httpReq = http();
-      const { data } = await httpReq.post(`/users`, finalObj);
+      const { data } = await httpReq.post(`/api/users`, finalObj);
 
       const obj = {
         email: finalObj.email,
         password: finalObj.password,
       };
 
-      const res = await httpReq.post(`/send-email`, obj);
+      const res = await httpReq.post(`/api/send-email`, obj);
       console.log(res);
       swal("Success", "Employee created successfully", "success");
       empForm.resetFields();
@@ -63,6 +65,20 @@ const NewEmployee = () => {
       setLoading(false);
     }
   };
+  // udpate isActive
+  const updateIsActive = async (id, isActive) => {
+    try {
+      const obj = {
+        isActive: !isActive,
+      };
+      const httpReq = http();
+      await http.put(`/api/users/${id}`, obj);
+      swal("Success", "Record updated successfully", "success");
+    } catch (error) {
+      console.log(error);
+      swal("Error", "Unable to update status", "error");
+    }
+  };
 
   // handle upload
   const handleUpload = async (e) => {
@@ -71,7 +87,7 @@ const NewEmployee = () => {
       const formData = new FormData();
       formData.append("photo", file);
       const httpReq = http();
-      const { data } = await httpReq.post("/upload/file", formData);
+      const { data } = await httpReq.post("/api/upload/file", formData);
       setPhoto(data.filePath);
     } catch (error) {
       swal("Failed", "unable to upload", "warning");
@@ -80,12 +96,20 @@ const NewEmployee = () => {
   const columns = [
     {
       title: "Profile",
-      key: "fullname",
+      key: "profile",
+      render: (src, obj) => (
+        <Image
+          className="rounded-full"
+          width={40}
+          height={40}
+          src={`${import.meta.env.VITE_BASEURL}/${obj.profile}`}
+        />
+      ),
     },
     {
       title: "Fullname",
-      dataIndex: "fullname",
-      key: "fullname",
+      dataIndex: "fullName",
+      key: "fullName",
     },
     {
       title: "Email",
@@ -105,13 +129,25 @@ const NewEmployee = () => {
     {
       title: "Action",
       key: "action",
-      render: () => (
+      fixed: "right",
+      render: (_, obj) => (
         <div className="flex gap-1">
-          <Button
-            className="!bg-pink-100 !text-pink-500"
-            icon={<EyeInvisibleOutlined />}
-            type="text"
-          />
+          <Popconfirm
+            title="Are you sure?"
+            description="Once you update, you can also re-update !"
+            onCancel={() => swal("No changes occur", "")}
+            onConfirm={() => updateIsActive(obj._id, obj.isActive)}
+          >
+            <Button
+              className={`${
+                obj.isActive
+                  ? "!bg-indigo-100 !text-indigo-500"
+                  : "!bg-pink-100 !text-pink-500"
+              }`}
+              icon={obj.isActive ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+              type="text"
+            />
+          </Popconfirm>
           <Button
             className="!bg-green-100 !text-green-500"
             icon={<EditOutlined />}
@@ -171,8 +207,20 @@ const NewEmployee = () => {
             </Item>
           </Form>
         </Card>
-        <Card className="md:col-span-2 overflow-auto" title="New employee list">
-          <Table columns={columns} dataSource={[{}, {}]} />
+        <Card
+          className="md:col-span-2 "
+          title="New employee list"
+          style={{
+            overflowX: "auto",
+          }}
+        >
+          <Table
+            columns={columns}
+            dataSource={allEmployee}
+            scroll={{
+              x: "max-content",
+            }}
+          />
         </Card>
       </div>
     </Adminlayout>
