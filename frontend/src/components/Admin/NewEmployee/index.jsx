@@ -17,6 +17,7 @@ const NewEmployee = () => {
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [allEmployee, setAllEmployee] = useState([]);
+  const [no, setNo] = useState(0);
   // get all employee
   useEffect(() => {
     const fetcher = async () => {
@@ -30,13 +31,15 @@ const NewEmployee = () => {
       }
     };
     fetcher();
-  }, []);
+  }, [no]);
   // create new employee
   const onFinish = async (values) => {
+    console.log(values);
     try {
       setLoading(true);
       let finalObj = trimData(values);
       finalObj.profile = photo ? photo : "bankImages/dummy.jpg";
+      finalObj.key = finalObj.email;
       const httpReq = http();
       const { data } = await httpReq.post(`/api/users`, finalObj);
 
@@ -49,6 +52,7 @@ const NewEmployee = () => {
       console.log(res);
       swal("Success", "Employee created successfully", "success");
       empForm.resetFields();
+      setNo(no + 1);
     } catch (error) {
       console.log(error);
       if (error?.response?.data?.error?.code === 11000) {
@@ -72,8 +76,9 @@ const NewEmployee = () => {
         isActive: !isActive,
       };
       const httpReq = http();
-      await http.put(`/api/users/${id}`, obj);
-      swal("Success", "Record updated successfully", "success");
+      await httpReq.put(`/api/users/${id}`, obj);
+      swal("Success", "Status updated successfully", "success");
+      setNo(no + 1);
     } catch (error) {
       console.log(error);
       swal("Error", "Unable to update status", "error");
@@ -89,6 +94,7 @@ const NewEmployee = () => {
       const httpReq = http();
       const { data } = await httpReq.post("/api/upload/file", formData);
       setPhoto(data.filePath);
+      setNo(no + 1);
     } catch (error) {
       swal("Failed", "unable to upload", "warning");
     }
@@ -172,7 +178,7 @@ const NewEmployee = () => {
             </Item>
             <div className="grid md:grid-cols-2 gap-x-2">
               <Item
-                name="fullname"
+                name="fullName"
                 label="Fullname"
                 rules={[{ required: true }]}
               >
