@@ -84,7 +84,17 @@ const NewEmployee = () => {
       swal("Error", "Unable to update status", "error");
     }
   };
-
+  // delete employee
+  const onDeleteUser = async (id) => {
+    try {
+      const httpReq = http();
+      const { data } = await httpReq.delete(`/api/users/${id}`);
+      swal("Success", "Employee deleted successfully", "success");
+      setNo(no + 1);
+    } catch (error) {
+      swal("Failed", "Failed to delete employee", "warning");
+    }
+  };
   // handle upload
   const handleUpload = async (e) => {
     try {
@@ -159,11 +169,18 @@ const NewEmployee = () => {
             icon={<EditOutlined />}
             type="text"
           />
-          <Button
-            className="!bg-rose-100 !text-rose-500"
-            icon={<DeleteOutlined />}
-            type="text"
-          />
+          <Popconfirm
+            title="Are you sure?"
+            description="Once you update, you can also re-update !"
+            onCancel={() => swal("Your data is safe", "")}
+            onConfirm={() => onDeleteUser(obj._id)}
+          >
+            <Button
+              className="!bg-rose-100 !text-rose-500"
+              icon={<DeleteOutlined />}
+              type="text"
+            />
+          </Popconfirm>
         </div>
       ),
     },
