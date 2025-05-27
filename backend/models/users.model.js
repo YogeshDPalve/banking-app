@@ -11,7 +11,6 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-
       unique: true,
     },
     password: {
@@ -24,6 +23,9 @@ const userSchema = new Schema(
       type: String,
     },
     userType: {
+      type: String,
+    },
+    key: {
       type: String,
     },
     isActive: {

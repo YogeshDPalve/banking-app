@@ -18,10 +18,10 @@ export const createNewRecord = async (data, schema) => {
 
 export const updateRecord = async (id, data, schema) => {
   const dbRes = await schema.findByIdAndUpdate(id, data, { new: true });
-  return dbRes();
+  return dbRes;
 };
 
 export const deleteRecord = async (id, schema) => {
   const dbRes = await schema.findByIdAndDelete(id);
-  return dbRes();
+  return dbRes;
 };
