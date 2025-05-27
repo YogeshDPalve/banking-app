@@ -1,5 +1,6 @@
 import {
   createNewRecord,
+  deleteRecord,
   findAllRecord,
   updateRecord,
 } from "../services/db.service.js";
@@ -57,6 +58,24 @@ export const updateData = async (req, res, schema) => {
     return res.status(200).send({
       success: true,
       message: "Record Updated !",
+      data: dbRes,
+    });
+  } catch (error) {
+    console.log("Error to update status : ", error);
+    return res.status(500).send({
+      success: false,
+      message: "Internal server error",
+      error,
+    });
+  }
+};
+export const deleteData = async (req, res, schema) => {
+  try {
+    const { id } = req.params;
+    const dbRes = await deleteRecord(id, schema);
+    return res.status(200).send({
+      success: true,
+      message: "Record Deleted !",
       data: dbRes,
     });
   } catch (error) {
