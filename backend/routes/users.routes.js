@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
 });
 router.put("/:id", (req, res) => {
   updateData(req, res, UserModel);
-});
+}); 
 router.delete("/:id", (req, res) => {
   deleteData(req, res, UserModel);
 });
