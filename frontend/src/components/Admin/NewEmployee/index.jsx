@@ -18,6 +18,8 @@ const NewEmployee = () => {
   const [photo, setPhoto] = useState(null);
   const [allEmployee, setAllEmployee] = useState([]);
   const [no, setNo] = useState(0);
+  const [edit, setEdit] = useState([]);
+  console.log(edit);
   // get all employee
   useEffect(() => {
     const fetcher = async () => {
@@ -95,6 +97,15 @@ const NewEmployee = () => {
       swal("Failed", "Failed to delete employee", "warning");
     }
   };
+  // update employee
+  const onEditUser = async (obj) => {
+    try {
+      setEdit(obj);
+      empForm.setFieldsValue(obj);
+    } catch (error) {
+      swal("Failed", "Failed to update employee data", "warning");
+    }
+  };
   // handle upload
   const handleUpload = async (e) => {
     try {
@@ -164,11 +175,18 @@ const NewEmployee = () => {
               type="text"
             />
           </Popconfirm>
-          <Button
-            className="!bg-green-100 !text-green-500"
-            icon={<EditOutlined />}
-            type="text"
-          />
+          <Popconfirm
+            title="Are you sure?"
+            description="Once you update, you can also re-update !"
+            onCancel={() => swal("No changes occur", "")}
+            onConfirm={() => onEditUser(obj)}
+          >
+            <Button
+              className="!bg-green-100 !text-green-500"
+              icon={<EditOutlined />}
+              type="text"
+            />
+          </Popconfirm>
           <Popconfirm
             title="Are you sure?"
             description="Once you update, you can also re-update !"
@@ -212,21 +230,35 @@ const NewEmployee = () => {
                 label="Password"
                 rules={[{ required: true }]}
               >
-                <Input type="password" />
+                <Input
+                  type="password"
+                  disabled={edit.length != 0 ? true : false}
+                />
               </Item>
             </div>
             <Item name="address" label="Address">
               <Input.TextArea />
             </Item>
             <Item>
-              <Button
-                type="text"
-                loading={loading}
-                className="w-full !bg-blue-500 !text-bold !text-white"
-                htmlType="submit"
-              >
-                submit
-              </Button>
+              {edit.length != 0 ? (
+                <Button
+                  type="text"
+                  loading={loading}
+                  className="w-full !bg-green-500 !text-bold !text-white"
+                  htmlType="submit"
+                >
+                  update
+                </Button>
+              ) : (
+                <Button
+                  type="text"
+                  loading={loading}
+                  className="w-full !bg-blue-500 !text-bold !text-white"
+                  htmlType="submit"
+                >
+                  submit
+                </Button>
+              )}
             </Item>
           </Form>
         </Card>
