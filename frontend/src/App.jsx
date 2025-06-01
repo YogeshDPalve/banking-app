@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Homepage from "./components/Home";
 import Dashboard from "./components/Admin";
 import NewEmployee from "./components/Admin/NewEmployee";
-
+   
 const App = () => {
   return (
     <BrowserRouter>
