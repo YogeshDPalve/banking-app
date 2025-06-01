@@ -18,13 +18,13 @@ const NewEmployee = () => {
   const [photo, setPhoto] = useState(null);
   const [allEmployee, setAllEmployee] = useState([]);
   const [no, setNo] = useState(0);
+  const [edit, setEdit] = useState([]);
   // get all employee
   useEffect(() => {
     const fetcher = async () => {
       try {
         const httpReq = http();
         const { data } = await httpReq.get("/api/users/");
-        console.log(data);
         setAllEmployee(data?.data);
       } catch (error) {
         swal("Failed", "Unable to fetch data.", "warning");
@@ -93,6 +93,37 @@ const NewEmployee = () => {
       setNo(no + 1);
     } catch (error) {
       swal("Failed", "Failed to delete employee", "warning");
+    }
+  };
+  // update employee
+  const onEditUser = async (obj) => {
+    try {
+      setEdit(obj);
+      empForm.setFieldsValue(obj);
+    } catch (error) {
+      swal("Failed", "Failed to update employee data", "warning");
+    }
+  };
+  // fix on update function at finalobj trim data before submit
+  const onUpdate = async (values) => {
+    try {
+      setLoading(true);
+      // const finalObj = trimData();
+      // console.log("finalObj before :", finalObj);
+      // console.log("values before :", values);
+      if (photo) {
+        values.profile = photo;
+      }
+      const httpReq = http();
+      await httpReq.put(`/api/users/${edit._id}`, values);
+      swal("Success", "Employee Updated Successfully", "success");
+      setEdit([]);
+      empForm.resetFields();
+      setNo(no + 1);
+    } catch (error) {
+      swal("Failed", "Failed to upate employee data", "warning");
+    } finally {
+      setLoading(false);
     }
   };
   // handle upload
@@ -164,11 +195,18 @@ const NewEmployee = () => {
               type="text"
             />
           </Popconfirm>
-          <Button
-            className="!bg-green-100 !text-green-500"
-            icon={<EditOutlined />}
-            type="text"
-          />
+          <Popconfirm
+            title="Are you sure?"
+            description="Once you update, you can also re-update !"
+            onCancel={() => swal("No changes occur", "")}
+            onConfirm={() => onEditUser(obj)}
+          >
+            <Button
+              className="!bg-green-100 !text-green-500"
+              icon={<EditOutlined />}
+              type="text"
+            />
+          </Popconfirm>
           <Popconfirm
             title="Are you sure?"
             description="Once you update, you can also re-update !"
@@ -189,7 +227,11 @@ const NewEmployee = () => {
     <Adminlayout>
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add new employee">
-          <Form form={empForm} onFinish={onFinish} layout="vertical">
+          <Form
+            form={empForm}
+            onFinish={edit.length != 0 ? onUpdate : onFinish}
+            layout="vertical"
+          >
             <Item name="photo" label="Profile">
               <Input type="file" onChange={handleUpload} />
             </Item>
@@ -212,21 +254,35 @@ const NewEmployee = () => {
                 label="Password"
                 rules={[{ required: true }]}
               >
-                <Input type="password" />
+                <Input
+                  type="password"
+                  disabled={edit.length != 0 ? true : false}
+                />
               </Item>
             </div>
             <Item name="address" label="Address">
               <Input.TextArea />
             </Item>
             <Item>
-              <Button
-                type="text"
-                loading={loading}
-                className="w-full !bg-blue-500 !text-bold !text-white"
-                htmlType="submit"
-              >
-                submit
-              </Button>
+              {edit.length != 0 ? (
+                <Button
+                  type="text"
+                  loading={loading}
+                  className="w-full !bg-green-500 !text-bold !text-white"
+                  htmlType="submit"
+                >
+                  update
+                </Button>
+              ) : (
+                <Button
+                  type="text"
+                  loading={loading}
+                  className="w-full !bg-blue-500 !text-bold !text-white"
+                  htmlType="submit"
+                >
+                  submit
+                </Button>
+              )}
             </Item>
           </Form>
         </Card>
