@@ -19,14 +19,12 @@ const NewEmployee = () => {
   const [allEmployee, setAllEmployee] = useState([]);
   const [no, setNo] = useState(0);
   const [edit, setEdit] = useState([]);
-  console.log(edit);
   // get all employee
   useEffect(() => {
     const fetcher = async () => {
       try {
         const httpReq = http();
         const { data } = await httpReq.get("/api/users/");
-        console.log(data);
         setAllEmployee(data?.data);
       } catch (error) {
         swal("Failed", "Unable to fetch data.", "warning");
@@ -104,6 +102,28 @@ const NewEmployee = () => {
       empForm.setFieldsValue(obj);
     } catch (error) {
       swal("Failed", "Failed to update employee data", "warning");
+    }
+  };
+  // fix on update function at finalobj trim data before submit
+  const onUpdate = async (values) => {
+    try {
+      setLoading(true);
+      // const finalObj = trimData();
+      // console.log("finalObj before :", finalObj);
+      // console.log("values before :", values);
+      if (photo) {
+        values.profile = photo;
+      }
+      const httpReq = http();
+      await httpReq.put(`/api/users/${edit._id}`, values);
+      swal("Success", "Employee Updated Successfully", "success");
+      setEdit([]);
+      empForm.resetFields();
+      setNo(no + 1);
+    } catch (error) {
+      swal("Failed", "Failed to upate employee data", "warning");
+    } finally {
+      setLoading(false);
     }
   };
   // handle upload
@@ -207,7 +227,11 @@ const NewEmployee = () => {
     <Adminlayout>
       <div className="grid md:grid-cols-3 gap-3">
         <Card title="Add new employee">
-          <Form form={empForm} onFinish={onFinish} layout="vertical">
+          <Form
+            form={empForm}
+            onFinish={edit.length != 0 ? onUpdate : onFinish}
+            layout="vertical"
+          >
             <Item name="photo" label="Profile">
               <Input type="file" onChange={handleUpload} />
             </Item>
